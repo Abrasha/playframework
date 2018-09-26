@@ -29,8 +29,8 @@ final class DBModule extends SimpleModule((environment, configuration) => {
     if (dbs.contains(default)) Seq(bind[Database].to(bindNamed(default))) else Nil
   }
 
-  val dbKey = configuration.underlying.getString("play.db.config")
-  val default = configuration.underlying.getString("play.db.default")
+  val dbKey = configuration.get[String]("play.db.config")
+  val default = configuration.get[String]("play.db.default")
   val dbs = configuration.getOptional[Configuration](dbKey).getOrElse(Configuration.empty).subKeys
   Seq(
     bind[DBApi].toProvider[DBApiProvider]

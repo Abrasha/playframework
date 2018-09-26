@@ -16,7 +16,7 @@ class Application @Inject() (env: Environment, configuration: Configuration, c: 
   }
 
   def config = Action {
-    Ok(configuration.underlying.getString("some.config"))
+    Ok(configuration.get[String]("some.config"))
   }
 
   def count = Action {

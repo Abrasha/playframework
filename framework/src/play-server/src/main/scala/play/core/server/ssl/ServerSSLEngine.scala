@@ -25,7 +25,7 @@ import scala.util.{ Failure, Success }
 object ServerSSLEngine {
 
   def createSSLEngineProvider(serverConfig: ServerConfig, applicationProvider: ApplicationProvider): JavaSSLEngineProvider = {
-    val providerClassName = serverConfig.configuration.underlying.getString("play.server.https.engineProvider")
+    val providerClassName = serverConfig.configuration.get[String]("play.server.https.engineProvider")
 
     val classLoader = applicationProvider.get.map(_.classloader).getOrElse(this.getClass.getClassLoader)
     val providerClass = classLoader.loadClass(providerClassName)

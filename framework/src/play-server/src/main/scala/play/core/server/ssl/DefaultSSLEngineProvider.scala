@@ -11,7 +11,7 @@ import javax.net.ssl.{ TrustManager, KeyManagerFactory, SSLEngine, SSLContext, X
 import java.security.KeyStore
 import java.security.cert.X509Certificate
 import java.io.File
-import play.api.Logger
+import play.api.{Configuration, Logger}
 import scala.util.control.NonFatal
 import play.utils.PlayIO
 
@@ -29,7 +29,7 @@ class DefaultSSLEngineProvider(serverConfig: ServerConfig, appProvider: Applicat
   }
 
   def createSSLContext(applicationProvider: ApplicationProvider): SSLContext = {
-    val httpsConfig = serverConfig.configuration.underlying.getConfig("play.server.https")
+    val httpsConfig = serverConfig.configuration.get[Configuration]("play.server.https").underlying
     val keyStoreConfig = httpsConfig.getConfig("keyStore")
     val keyManagerFactory: KeyManagerFactory = if (keyStoreConfig.hasPath("path")) {
       val path = keyStoreConfig.getString("path")

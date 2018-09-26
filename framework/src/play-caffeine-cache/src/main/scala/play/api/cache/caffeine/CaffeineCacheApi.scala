@@ -30,7 +30,7 @@ trait CaffeineCacheComponents {
   def actorSystem: ActorSystem
   implicit def executionContext: ExecutionContext
 
-  lazy val caffeineCacheManager: CaffeineCacheManager = new CaffeineCacheManager(configuration.underlying.getConfig("play.cache.caffeine"))
+  lazy val caffeineCacheManager: CaffeineCacheManager = new CaffeineCacheManager(configuration.get[Configuration]("play.cache.caffeine").underlying)
 
   /**
    * Use this to create with the given name.
@@ -41,7 +41,7 @@ trait CaffeineCacheComponents {
     new CaffeineCacheApi(NamedCaffeineCacheProvider.getNamedCache(name, caffeineCacheManager, configuration))(ec)
   }
 
-  lazy val defaultCacheApi: AsyncCacheApi = cacheApi(configuration.underlying.getString("play.cache.defaultCache"))
+  lazy val defaultCacheApi: AsyncCacheApi = cacheApi(configuration.get[String]("play.cache.defaultCache"))
 }
 
 /**
@@ -51,8 +51,8 @@ class CaffeineCacheModule extends SimpleModule((environment, configuration) => {
 
   import scala.collection.JavaConverters._
 
-  val defaultCacheName = configuration.underlying.getString("play.cache.defaultCache")
-  val bindCaches = configuration.underlying.getStringList("play.cache.bindCaches").asScala
+  val defaultCacheName = configuration.get[String]("play.cache.defaultCache")
+  val bindCaches = configuration.get[Seq[String]]("play.cache.bindCaches")
 
   // Creates a named cache qualifier
   def named(name: String): NamedCache = {
@@ -95,7 +95,7 @@ class CaffeineCacheModule extends SimpleModule((environment, configuration) => {
 @Singleton
 class CacheManagerProvider @Inject() (configuration: Configuration) extends Provider[CaffeineCacheManager] {
   lazy val get: CaffeineCacheManager = {
-    val cacheManager: CaffeineCacheManager = new CaffeineCacheManager(configuration.underlying.getConfig("play.cache.caffeine"))
+    val cacheManager: CaffeineCacheManager = new CaffeineCacheManager(configuration.get[Configuration]("play.cache.caffeine").underlying)
     cacheManager
   }
 }

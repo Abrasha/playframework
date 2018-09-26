@@ -50,11 +50,9 @@ trait EhCacheComponents {
  */
 class EhCacheModule extends SimpleModule((environment, configuration) => {
 
-  import scala.collection.JavaConverters._
-
-  val defaultCacheName = configuration.underlying.getString("play.cache.defaultCache")
-  val bindCaches = configuration.underlying.getStringList("play.cache.bindCaches").asScala
-  val createBoundCaches = configuration.underlying.getBoolean("play.cache.createBoundCaches")
+  val defaultCacheName = configuration.get[String]("play.cache.defaultCache")
+  val bindCaches = configuration.get[Seq[String]]("play.cache.bindCaches")
+  val createBoundCaches = configuration.get[Boolean]("play.cache.createBoundCaches")
 
   // Creates a named cache qualifier
   def named(name: String): NamedCache = {
@@ -97,7 +95,7 @@ class EhCacheModule extends SimpleModule((environment, configuration) => {
 @Singleton
 class CacheManagerProvider @Inject() (env: Environment, config: Configuration, lifecycle: ApplicationLifecycle) extends Provider[CacheManager] {
   lazy val get: CacheManager = {
-    val resourceName = config.underlying.getString("play.cache.configResource")
+    val resourceName = config.get[String]("play.cache.configResource")
     val configResource = env.resource(resourceName).getOrElse(env.classLoader.getResource("ehcache-default.xml"))
     val manager = CacheManager.create(configResource)
     lifecycle.addStopHook(() => Future.successful(manager.shutdown()))
